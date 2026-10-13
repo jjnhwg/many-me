@@ -28,6 +28,10 @@ React 19 + TypeScript + PixiJS v8 + Zustand, bundled with Vite.
 
 ## Commits and pushes to main
 
+Commit and push incrementally: after each self-contained change (a feature, a fix, a refactor step)
+that passes `npm run build`, commit it and push to `main` (`origin` is github.com/jjnhwg/many-me).
+Don't batch unrelated changes into one commit or leave finished work unpushed.
+
 Every commit message must start with a type and a short, accurate summary:
 
 - `feature: <what the user can now do>`
