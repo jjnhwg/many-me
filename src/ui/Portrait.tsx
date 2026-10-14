@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { outfits } from '../world/clones.config';
+import { lookOf, outfits } from '../world/clones.config';
 import { figureRects, OUTLINE, pose } from '../world/render/character';
 
 /** The clone's sprite drawn big on a plain canvas (same rects as the world renderer). */
-export function Portrait({ outfit, bg }: { outfit: string; bg: string }) {
+export function Portrait({ cloneId, outfit, bg }: { cloneId: string; outfit: string; bg: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const cv = ref.current;
@@ -16,7 +16,7 @@ export function Portrait({ outfit, bg }: { outfit: string; bg: string }) {
     cv.height = H * S;
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, cv.width, cv.height);
-    const list = figureRects(outfits[outfit], pose('idle', 0, false).fig);
+    const list = figureRects(outfits[outfit], pose('idle', 0, false).fig, lookOf(cloneId));
     const ox = W / 2;
     const oy = H - 4;
     ctx.fillStyle = OUTLINE;
@@ -25,6 +25,6 @@ export function Portrait({ outfit, bg }: { outfit: string; bg: string }) {
       ctx.fillStyle = c;
       ctx.fillRect((ox + x) * S, (oy + y) * S, w * S, h * S);
     }
-  }, [outfit, bg]);
+  }, [cloneId, outfit, bg]);
   return <canvas ref={ref} className="portrait" />;
 }

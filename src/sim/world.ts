@@ -1,7 +1,7 @@
 import { Grid } from '../engine/pathfinding';
 import { Rng } from '../engine/rng';
 import { roster } from '../world/clones.config';
-import { GREETINGS, type Activity } from '../world/activities.config';
+import { FRIEND_GREETINGS, GREETINGS, type Activity } from '../world/activities.config';
 import { points, pointById, props, walls, WORLD_H, WORLD_W } from '../world/zones.config';
 import { createClone, updateClone } from './clone';
 import type { Clone } from './types';
@@ -128,7 +128,10 @@ export class World {
           const dy = other.pos.y - me.pos.y;
           me.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'SE' : 'NW') : dy > 0 ? 'SW' : 'NE';
         }
-        a.bubble = { text: GREETINGS[Math.floor(Math.random() * GREETINGS.length)], until: this.realNow + 1800 };
+        // Between two Justins either can talk; with a friend, the Justin greets them.
+        const pool = a.name === b.name ? GREETINGS : FRIEND_GREETINGS;
+        const speaker = a.name === b.name || a.name === 'Justin' ? a : b;
+        speaker.bubble = { text: pool[Math.floor(Math.random() * pool.length)], until: this.realNow + 1800 };
       }
     }
   }

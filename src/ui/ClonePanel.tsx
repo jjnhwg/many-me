@@ -29,7 +29,7 @@ export function ClonePanel() {
   return (
     <aside className="card panel">
       <header>
-        <Portrait outfit={cfg.outfit} bg={`${cfg.color}33`} />
+        <Portrait cloneId={cfg.id} outfit={cfg.outfit} bg={`${cfg.color}33`} />
         <div>
           <h2>{c.label}</h2>
           <div className="sub">{c.zone}</div>

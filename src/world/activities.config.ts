@@ -64,7 +64,7 @@ export const activities: Activity[] = [
     effects: { energy: 20, focus: -5 }, summary: { kind: 'time', text: 'doomscrolled for {t}' }, emoji: '📱' },
   { id: 'skincare', label: 'doing skincare', category: 'selfcare', points: ['vanity'], anim: 'skincare', duration: [2, 4],
     effects: { mood: 40 }, summary: { kind: 'count', text: 'did skincare {n}x' }, emoji: '🧴' },
-  { id: 'sleep', label: 'sleeping', category: 'sleep', points: ['bed1', 'bed2', 'couch1', 'study_beanbag', 'dojo_mat'], anim: 'sleep', duration: [0, 0],
+  { id: 'sleep', label: 'sleeping', category: 'sleep', points: ['bed1', 'bed2', 'couch1', 'study_beanbag', 'dojo_mat', 'dojo_mat2'], anim: 'sleep', duration: [0, 0],
     effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤' },
   { id: 'wander', label: 'hanging out', category: 'wander', points: HALL, anim: 'idle', duration: [0.3, 1.2],
     effects: { energy: 2 }, summary: { kind: 'count', text: 'wandered the halls {n}x' }, emoji: '🚶' },
@@ -95,3 +95,5 @@ export const lines: Record<string, string[]> = {
 };
 
 export const GREETINGS = ['👋', 'yo', 'sup me', '✋ high five', 'lookin good'];
+// When a Justin passes someone who isn't a Justin.
+export const FRIEND_GREETINGS = ['👋', 'hey you', 'hi Em', '💕', 'missed you'];

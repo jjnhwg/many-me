@@ -16,7 +16,7 @@ const clamp = (v: number) => Math.max(0, Math.min(100, v));
 export function createClone(cfg: CloneConfig, rngNext: () => number): Clone {
   const p = pointById.get(cfg.startPoint)!;
   return {
-    id: cfg.id, name: cfg.name, role: cfg.role, outfit: cfg.outfit,
+    id: cfg.id, name: cfg.name, role: cfg.role ?? cfg.name, outfit: cfg.outfit,
     pos: { x: p.tile[0], y: p.tile[1] }, prev: { x: p.tile[0], y: p.tile[1] },
     dir: p.dir, state: 'idle', path: [], idleFor: rngNext() * 2,
     needs: { energy: 70 + rngNext() * 25, focus: 60 + rngNext() * 30, hunger: 20 + rngNext() * 30, mood: 60 + rngNext() * 20 },

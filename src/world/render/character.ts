@@ -1,6 +1,6 @@
-// The base avatar ("me") as a list of pixel rects, layered with an outfit and a pose.
+// An avatar ("me" by default) as a list of pixel rects, layered with an outfit and a pose.
 // Origin (0,0) = between the feet. Facing 3/4 toward the viewer; mirror for the other side.
-import { avatar, type Outfit } from '../clones.config';
+import { avatar, type Look, type Outfit } from '../clones.config';
 import type { R } from './draw';
 import { shade } from './draw';
 
@@ -92,17 +92,18 @@ export function pose(name: PoseName, t: number, back: boolean): PoseResult {
   return { fig, rotation, lying: false };
 }
 
-export function figureRects(o: Outfit, fig: Figure): R[] {
+export function figureRects(o: Outfit, fig: Figure, look: Look = avatar): R[] {
   const out: R[] = [];
   const add = (x: number, y: number, w: number, h: number, c: string) => out.push([x, y, w, h, c]);
   const dy = fig.bodyDy ?? 0;
   const lx = fig.leanX ?? 0;
-  const { skin, skinShade, hair, hairHi, eye } = avatar;
+  const { skin, skinShade, hair, hairHi, eye } = look;
+  const longHair = look.hairStyle === 'long';
   const shoe = o.barefoot ? skin : o.shoes;
 
   // ---- legs ----
   const leg = (x: number, top: number, h: number, w = 3) => {
-    if (o.shorts) {
+    if (o.shorts || o.skirt) {
       const sh = Math.min(5, h - 2);
       add(x, top, w, sh, o.bottom);
       add(x, top + sh, w, h - sh, skin);
@@ -119,6 +120,11 @@ export function figureRects(o: Outfit, fig: Figure): R[] {
     case 'squat1': leg(-6, -7, 6); leg(3, -7, 6); add(-7, -2, 4, 2, shoe); add(3, -2, 4, 2, shoe); add(-5, -8, 10, 2, o.bottom); break;
     case 'squat2': leg(-7, -4, 3, 4); leg(3, -4, 3, 4); add(-7, -2, 4, 2, shoe); add(3, -2, 4, 2, shoe); add(-6, -5, 12, 2, o.bottom); break;
     case 'lunge': leg(-6, -7, 6); leg(2, -8, 7); add(-7, -2, 4, 2, shoe); add(2, -2, 4, 2, shoe); add(-5, -8, 9, 2, o.bottom); break;
+  }
+  // A skirt flares a pixel past the hips while standing or walking.
+  if (o.skirt && (fig.legs === 'stand' || fig.legs === 'walkA' || fig.legs === 'walkB')) {
+    add(-5, -10, 10, 4, o.bottom);
+    add(-5, -7, 10, 1, shade(o.bottom, 0.15));
   }
 
   // ---- torso ----
@@ -183,9 +189,12 @@ export function figureRects(o: Outfit, fig: Figure): R[] {
   add(hx, hy, 8, 8, skin);
   add(hx, hy + 7, 8, 1, skinShade);
   if (fig.back) {
-    add(hx - 1, hy - 1, 10, 7, hair);
+    add(hx - 1, hy - 1, 10, longHair ? 13 : 7, hair);
     add(hx + 1, hy - 1, 3, 1, hairHi);
+    if (longHair) add(hx, hy + 11, 8, 1, shade(hair, 0.2));
   } else {
+    // Long hair falls past the shoulders on both sides of the face.
+    if (longHair) { add(hx - 1, hy, 2, 11, hair); add(hx + 7, hy, 2, 10, hair); add(hx - 1, hy + 10, 2, 1, shade(hair, 0.2)); }
     add(hx, hy - 1, 8, 3, hair);
     add(hx - 1, hy, 1, 4, hair);
     add(hx + 8, hy, 1, 3, hair);
@@ -197,6 +206,7 @@ export function figureRects(o: Outfit, fig: Figure): R[] {
     else if (eyes === 'closed') { add(hx + 2, hy + 5, 2, 1, eye); add(hx + 5, hy + 5, 2, 1, eye); }
     else { add(hx + 3, hy + 5, 1, 1, eye); add(hx + 6, hy + 5, 1, 1, eye); }
     add(hx + 5, hy + 7, 1, 1, skinShade);
+    if (look.blush) { add(hx + 2, hy + 6, 1, 1, look.blush); add(hx + 7, hy + 6, 1, 1, look.blush); }
   }
   if (o.accessory === 'glasses' && !fig.back) {
     add(hx + 2, hy + 3, 6, 1, o.accent);
