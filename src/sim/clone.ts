@@ -183,9 +183,6 @@ function maybeMoment(w: World, c: Clone, a: Activity, dt: number): void {
   } else if (a.id === 'roll' && r < 0.45) {
     c.moment = { kind: 'tap', start: w.simTime, dur: 4000 };
     c.bubble = { text: 'tap! 🤚', until: w.realNow + 1800 };
-  } else if (a.id === 'read' && r < 0.3) {
-    c.moment = { kind: 'doze', start: w.simTime, dur: 15_000 + Math.random() * 20_000 };
-    c.bubble = { text: '💤', until: w.realNow + 3000 };
   } else {
     say(w, c, lines[a.id]);
   }

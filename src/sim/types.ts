@@ -3,7 +3,7 @@ import type { Needs } from '../world/activities.config';
 
 export type CloneState = 'idle' | 'walking' | 'doing' | 'sleeping';
 
-export type Moment = { kind: 'build' | 'tap' | 'doze' | 'wave'; start: number; dur: number; flag?: boolean };
+export type Moment = { kind: 'build' | 'tap' | 'wave'; start: number; dur: number; flag?: boolean };
 
 export type LogEntry = { activityId: string; start: number; end?: number };
 

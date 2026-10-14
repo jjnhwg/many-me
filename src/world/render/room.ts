@@ -51,7 +51,7 @@ export function drawFloor(): Graphics {
     }
   }
 
-  // Decals: dojo mats, rugs, hallway runner.
+  // Decals: dojo mats, golf turf, rugs, hallway runner.
   quad(g, rectQuad(1, 1, 9, 8), '#5b83d6');
   for (let my = 0; my < 3; my++) {
     for (let mx = 0; mx < 4; mx++) {
@@ -60,8 +60,12 @@ export function drawFloor(): Graphics {
       quad(g, rectQuad(x0, y0, x0 + 1.85, y0 + 2.15), (mx + my) % 2 ? '#2f5fbf' : '#2a55ab');
     }
   }
-  quad(g, rectQuad(1.2, 14.6, 5.2, 18.6), '#8c3b3b');
-  quad(g, rectQuad(1.45, 14.85, 4.95, 18.35), '#a84a44');
+  // Driving range: hitting mat in front of the screen, putting green in the corner.
+  quad(g, rectQuad(1.6, 14.8, 4.6, 17.6), '#2f5f33');
+  quad(g, rectQuad(1.8, 15.0, 4.4, 17.4), '#3f8a45');
+  quad(g, rectQuad(1.8, 16.95, 4.4, 17.05), '#e8f2e0');
+  quad(g, rectQuad(5.3, 18.4, 9.6, 20.9), '#5fae55');
+  quad(g, rectQuad(5.5, 18.6, 9.4, 20.7), '#8fd47a');
   quad(g, rectQuad(12.2, 14.2, 16.2, 17.8), '#5fb8b0');
   quad(g, rectQuad(12.45, 14.45, 15.95, 17.55), '#7ad1c9');
   quad(g, rectQuad(0.5, 9.7, 29.5, 11.3), '#b9b09d');

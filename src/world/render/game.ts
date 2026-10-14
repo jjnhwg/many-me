@@ -207,7 +207,6 @@ export class Game implements GameApi {
       const t = this.w.simTime - m.start;
       if (m.kind === 'build') return t < 2200 ? 'facepalm' : 'fistpump';
       if (m.kind === 'tap') return t < 1500 ? 'tapRoll' : 'stretch';
-      if (m.kind === 'doze') return 'dozeSit';
       if (m.kind === 'wave') return 'wave';
     }
     if (c.state === 'walking') return 'walk';
@@ -372,7 +371,7 @@ export class Game implements GameApi {
     for (const c of this.w.clones) {
       const v = this.cloneViews.get(c.id)!;
       let text = c.bubble && c.bubble.until > now ? c.bubble.text : '';
-      if (!text && (c.state === 'sleeping' || c.moment?.kind === 'doze')) text = ['z', 'z z', 'z z Z'][Math.floor(now / 600) % 3];
+      if (!text && c.state === 'sleeping') text = ['z', 'z z', 'z z Z'][Math.floor(now / 600) % 3];
       if (!text) {
         v.bubble.visible = false;
         continue;
@@ -525,7 +524,6 @@ export class Game implements GameApi {
         let activity = 'thinking about what to do';
         if (c.state === 'walking' && act) activity = `heading off ${act.label === 'hanging out' ? 'to hang out' : `→ ${act.label}`}`;
         else if (act && c.current) activity = act.label;
-        if (c.moment?.kind === 'doze') activity = 'dozed off on the book';
         if (c.moment?.kind === 'build') activity = 'fixing a broken build';
         const zone = zoneAt(Math.round(c.pos.x), Math.round(c.pos.y))?.name ?? '';
         return {

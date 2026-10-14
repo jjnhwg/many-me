@@ -6,7 +6,9 @@ import { shade } from './draw';
 
 type Legs = 'stand' | 'walkA' | 'walkB' | 'sit' | 'squat1' | 'squat2' | 'lunge';
 type Arm = 'down' | 'swingF' | 'swingB' | 'chest' | 'type1' | 'type2' | 'up' | 'face' | 'shoulder' | 'reach' | 'out' | 'wave1' | 'wave2';
-type Held = 'book' | 'bookOpen' | 'bowl' | 'mug' | 'mugUp' | 'phone' | 'barbell' | 'dumbbellsLow' | 'dumbbellsHigh' | 'marker' | 'bottle' | 'bottleUp' | 'apple' | 'shaker' | 'shakerUp';
+type Held =
+  | 'bowl' | 'mug' | 'mugUp' | 'phone' | 'barbell' | 'dumbbellsLow' | 'dumbbellsHigh' | 'bottle' | 'bottleUp' | 'apple'
+  | 'clubDown' | 'clubBack' | 'clubThrough' | 'ball' | 'putter' | 'shaker' | 'shakerUp';
 
 export type Figure = {
   legs: Legs;
@@ -21,13 +23,13 @@ export type Figure = {
 };
 
 export type PoseName =
-  | 'idle' | 'walk' | 'run' | 'type' | 'squat' | 'press' | 'drill' | 'roll' | 'tapRoll' | 'stretch' | 'read'
-  | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'write' | 'rest' | 'facepalm' | 'fistpump'
-  | 'wave' | 'dozeSit';
+  | 'idle' | 'walk' | 'run' | 'type' | 'squat' | 'press' | 'drill' | 'roll' | 'tapRoll' | 'stretch' | 'swing' | 'putt'
+  | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'rest' | 'facepalm' | 'fistpump'
+  | 'wave';
 
 export type PoseResult = { fig: Figure; rotation: number; lying: boolean };
 
-const SITTING = new Set<PoseName>(['type', 'press', 'read', 'eat', 'shake', 'phone', 'rest', 'facepalm', 'fistpump', 'dozeSit']);
+const SITTING = new Set<PoseName>(['type', 'press', 'eat', 'shake', 'phone', 'rest', 'facepalm', 'fistpump']);
 
 /** Pick the figure for a pose at time t (ms). */
 export function pose(name: PoseName, t: number, back: boolean): PoseResult {
@@ -71,8 +73,21 @@ export function pose(name: PoseName, t: number, back: boolean): PoseResult {
       rotation = [0, 0.18, 0, -0.18][k];
       break;
     }
-    case 'read': fig = { ...base, la: 'chest', ra: 'chest', held: [f(2600, 2) ? 'bookOpen' : 'book'], eyes: 'down' }; break;
-    case 'dozeSit': fig = { ...base, la: 'chest', ra: 'chest', held: ['book'], eyes: 'closed', headDy: 2 }; break;
+    case 'swing': {
+      // 6 frames x 350 ms: address, address, top of backswing, impact, follow-through x2.
+      // The range screen times its ball flight to the impact frame (see golfscreen in props.ts).
+      const k = f(350, 6);
+      if (k <= 1) fig = { ...base, la: 'chest', ra: 'chest', held: ['clubDown', 'ball'], eyes: 'down', headDy: 1 };
+      else if (k === 2) fig = { ...base, la: 'shoulder', ra: 'chest', held: ['clubBack', 'ball'], eyes: 'down' };
+      else if (k === 3) fig = { ...base, la: 'chest', ra: 'chest', held: ['clubDown'], leanX: 1 };
+      else { fig = { ...base, la: 'chest', ra: 'shoulder', held: ['clubThrough'] }; rotation = 0.06; }
+      break;
+    }
+    case 'putt': {
+      const k = f(550, 4);
+      fig = { ...base, la: 'chest', ra: 'chest', held: ['putter', 'ball'], eyes: 'down', headDy: 2, bodyDy: 1, leanX: [0, -1, 0, 1][k] };
+      break;
+    }
     case 'sleep': return { fig: { ...base, back: false, eyes: 'closed', bodyDy: f(1400, 2) }, rotation: 1.107, lying: true };
     case 'eat':
     case 'eatStand': {
@@ -92,7 +107,6 @@ export function pose(name: PoseName, t: number, back: boolean): PoseResult {
     case 'rest': { const up = f(1500, 3) === 2; fig = { ...base, ra: up ? 'face' : 'chest', held: [up ? 'bottleUp' : 'bottle'] }; break; }
     case 'phone': fig = { ...base, la: 'chest', ra: 'chest', held: ['phone'], eyes: 'down', headDy: 1 }; break;
     case 'skincare': { const k = f(450, 2); fig = { ...base, la: k ? 'face' : 'up', ra: k ? 'up' : 'face' }; break; }
-    case 'write': { const k = f(300, 3); fig = { ...base, ra: 'reach', held: ['marker'], headDy: k === 1 ? 0 : 0, leanX: k === 2 ? 1 : 0 }; break; }
     case 'facepalm': fig = { ...base, la: 'face', ra: 'face', eyes: 'closed', headDy: 1 }; break;
     case 'fistpump': fig = { ...base, ra: f(220, 2) ? 'up' : 'shoulder', la: 'down' }; break;
     case 'wave': fig = { ...base, ra: f(180, 2) ? 'wave1' : 'wave2' }; break;
@@ -149,7 +163,7 @@ export function figureRects(o: Outfit, fig: Figure, look: Look = avatar): R[] {
   if (!fig.back) {
     if (o.id === 'gi') { add(tx + 4, ty, 1, 5, o.topShade); add(tx + 5, ty + 1, 1, 4, o.topShade); }
     if (o.id === 'dev') { add(tx + 3, ty + 5, 4, 2, o.topShade); add(tx + 4, ty + 1, 1, 3, '#d8d4e6'); add(tx + 6, ty + 1, 1, 3, '#d8d4e6'); }
-    if (o.id === 'study') { add(tx + 3, ty, 4, 1, '#f4f1ea'); add(tx, ty + 4, 10, 1, o.topShade); }
+    if (o.id === 'golf') { add(tx + 3, ty, 4, 1, '#f4f1ea'); add(tx + 4, ty + 1, 2, 2, o.topShade); }
     if (o.id === 'lounge') add(tx + 6, ty + 2, 2, 2, o.accent);
     if (o.id === 'gym') add(tx + 4, ty + 2, 2, 2, shade(o.top, 0.3));
   }
@@ -216,10 +230,10 @@ export function figureRects(o: Outfit, fig: Figure, look: Look = avatar): R[] {
     add(hx + 5, hy + 7, 1, 1, skinShade);
     if (look.blush) { add(hx + 2, hy + 6, 1, 1, look.blush); add(hx + 7, hy + 6, 1, 1, look.blush); }
   }
-  if (o.accessory === 'glasses' && !fig.back) {
-    add(hx + 2, hy + 3, 6, 1, o.accent);
-    add(hx + 2, hy + 4, 2, 2, '#cfe8ff'); add(hx + 5, hy + 4, 2, 2, '#cfe8ff');
-    if ((fig.eyes ?? 'open') === 'open') { add(hx + 3, hy + 5, 1, 1, eye); add(hx + 6, hy + 5, 1, 1, eye); }
+  if (o.accessory === 'cap') {
+    add(hx - 1, hy - 2, 10, 3, o.accent);
+    add(hx + 1, hy - 2, 3, 1, shade(o.accent, 0.3));
+    if (!fig.back) add(hx + 2, hy + 1, 8, 1, shade(o.accent, -0.3)); // brim
   }
   if (o.accessory === 'headphones') {
     add(hx - 1, hy - 2, 10, 1, '#16161c');
@@ -231,8 +245,6 @@ export function figureRects(o: Outfit, fig: Figure, look: Look = avatar): R[] {
   // ---- held items ----
   for (const h of fig.held ?? []) {
     switch (h) {
-      case 'book': add(lx - 4, ty + 3, 8, 5, '#8c3b3b'); add(lx - 3, ty + 3, 6, 1, '#f4efe2'); break;
-      case 'bookOpen': add(lx - 5, ty + 3, 10, 4, '#f4efe2'); add(lx - 5, ty + 7, 10, 1, '#8c3b3b'); add(lx, ty + 3, 1, 4, '#c9c1ae'); break;
       case 'bowl': add(lx - 3, ty + 6, 6, 2, '#f4f1ea'); add(lx - 3, ty + 6, 6, 1, '#d06b4a'); add(lx + 2, ty + 2, 1, 5, '#a8774a'); break;
       case 'apple': add(lx + 1, ty + 4, 3, 3, '#d64545'); break;
       case 'mug': add(tx + 9, ty + 3, 3, 3, '#f0ece4'); break;
@@ -241,14 +253,23 @@ export function figureRects(o: Outfit, fig: Figure, look: Look = avatar): R[] {
       case 'barbell': add(lx - 14, ty - 4, 28, 1, '#a0a6ae'); add(lx - 15, ty - 7, 2, 7, '#2a2a2e'); add(lx + 13, ty - 7, 2, 7, '#2a2a2e'); break;
       case 'dumbbellsLow': add(tx - 4, ty - 6, 4, 2, '#2a2a2e'); add(tx + 10, ty - 6, 4, 2, '#2a2a2e'); break;
       case 'dumbbellsHigh': add(tx - 3, ty - 11, 4, 2, '#2a2a2e'); add(tx + 9, ty - 11, 4, 2, '#2a2a2e'); break;
-      case 'marker': add(tx + 17, ty - 5, 1, 3, '#d33'); break;
       case 'bottle': add(tx + 9, ty + 2, 2, 4, '#5ab0ff'); break;
       case 'bottleUp': add(tx + 6, ty - 5, 2, 4, '#5ab0ff'); break;
+      // Golf. Clubs are drawn with the hands at the chest (down) or by a shoulder (back/through),
+      // sweeping over the head so the shaft never crosses the face.
+      case 'clubDown': for (let i = 0; i < 5; i++) add(lx + 1 + i, ty + 7 - dy + i * 2, 1, 3, CLUB); add(lx + 5, -2, 3, 2, CLUB_HEAD); break;
+      case 'clubBack': add(tx - 3, ty - 12, 1, 7, CLUB); add(tx - 3, ty - 12, 11, 1, CLUB); add(tx + 7, ty - 13, 2, 2, CLUB_HEAD); break;
+      case 'clubThrough': add(tx + 12, ty - 12, 1, 7, CLUB); add(tx + 2, ty - 12, 11, 1, CLUB); add(tx + 1, ty - 13, 2, 2, CLUB_HEAD); break;
+      case 'putter': for (let i = 0; i < 4; i++) add(lx + 1 + i, ty + 7 - dy + i * 3, 1, 3, CLUB); add(lx + 4, -1, 3, 1, CLUB_HEAD); break;
+      case 'ball': add(lx + 9, -2, 2, 2, '#ffffff'); break;
       case 'shaker': add(tx + 9, ty - 1, 4, 1, '#7b3fa0'); add(tx + 9, ty, 4, 7, '#efe6d6'); add(tx + 9, ty + 3, 4, 4, '#b98a62'); break;
       case 'shakerUp': add(tx + 5, ty - 9, 4, 1, '#7b3fa0'); add(tx + 5, ty - 8, 4, 7, '#efe6d6'); add(tx + 5, ty - 8, 4, 3, '#b98a62'); break;
     }
   }
   return out;
 }
+
+const CLUB = '#c0c4ca';
+const CLUB_HEAD = '#2a2a2e';
 
 export const OUTLINE = '#1a1622';

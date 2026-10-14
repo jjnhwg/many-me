@@ -1,12 +1,12 @@
 // What clones can do. Adding an activity is a data change here (+ an anim name the renderer knows).
 
-export type Category = 'bjj' | 'gym' | 'dev' | 'study' | 'coffee' | 'eat' | 'rest' | 'selfcare' | 'sleep' | 'wander';
+export type Category = 'bjj' | 'gym' | 'dev' | 'golf' | 'coffee' | 'eat' | 'rest' | 'selfcare' | 'sleep' | 'wander';
 
 export type Needs = { energy: number; focus: number; hunger: number; mood: number };
 
 export type Anim =
   | 'idle' | 'walk' | 'type' | 'squat' | 'press' | 'run' | 'drill' | 'roll' | 'stretch'
-  | 'read' | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'write' | 'rest';
+  | 'swing' | 'putt' | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'rest';
 
 export type Activity = {
   id: string;
@@ -46,13 +46,11 @@ export const activities: Activity[] = [
     effects: { energy: -8, focus: -30 }, summary: { kind: 'time', text: 'coded for {t}' }, emoji: '💻' },
   { id: 'coffee', label: 'getting coffee', category: 'coffee', points: ['dev_coffee'], anim: 'drink', duration: [1, 2],
     effects: { focus: 600, energy: 120 }, summary: { kind: 'count', text: 'had {n} coffees' }, emoji: '☕' },
-  // Study
-  { id: 'read', label: 'reading', category: 'study', points: ['study_beanbag', 'study_chair'], anim: 'read', duration: [4, 10], focusTask: true,
-    effects: { focus: -15, mood: 6 }, summary: { kind: 'time', text: 'read for {t}' }, emoji: '📖' },
-  { id: 'leetcode', label: 'grinding LeetCode', category: 'study', points: ['study_laptop'], anim: 'type', duration: [5, 12], focusTask: true,
-    effects: { energy: -8, focus: -28 }, summary: { kind: 'count', text: 'solved {n} LeetCode problems' }, emoji: '🧩' },
-  { id: 'whiteboard', label: 'at the whiteboard', category: 'study', points: ['study_board'], anim: 'write', duration: [2, 4], focusTask: true,
-    effects: { focus: -12 }, summary: { kind: 'time', text: 'whiteboarded for {t}' }, emoji: '📈' },
+  // Golf
+  { id: 'range', label: 'hitting the driving range', category: 'golf', points: ['golf_tee'], anim: 'swing', duration: [4, 9],
+    effects: { energy: -22, hunger: 6, mood: 10 }, summary: { kind: 'count', text: 'hit {n} buckets of balls' }, emoji: '🏌️' },
+  { id: 'putt', label: 'practicing putts', category: 'golf', points: ['golf_putt'], anim: 'putt', duration: [2, 5],
+    effects: { focus: -6, mood: 6 }, summary: { kind: 'time', text: 'putted for {t}' }, emoji: '⛳' },
   // Food
   { id: 'eat', label: 'eating', category: 'eat', points: ['kitchen_seat1', 'kitchen_seat2'], anim: 'eat', duration: [3, 6],
     effects: { hunger: -900, energy: 15, mood: 20 }, summary: { kind: 'count', text: 'ate {n} meals' }, emoji: '🍜' },
@@ -61,13 +59,13 @@ export const activities: Activity[] = [
   { id: 'shake', label: 'fighting a 3000-calorie shake', category: 'eat', points: ['kitchen_seat1', 'kitchen_seat2'], anim: 'shake', duration: [6, 12],
     effects: { hunger: -1200, energy: 10, mood: -12 }, summary: { kind: 'count', text: 'finished {n} mass-gainer shakes' }, emoji: '🥤', only: ['gym'] },
   // Rest / self-care
-  { id: 'nap', label: 'napping', category: 'rest', points: ['couch1', 'study_beanbag', 'dojo_mat'], anim: 'sleep', duration: [10, 25],
+  { id: 'nap', label: 'napping', category: 'rest', points: ['couch1', 'golf_beanbag', 'dojo_mat'], anim: 'sleep', duration: [10, 25],
     effects: { energy: 70, focus: 40 }, summary: { kind: 'count', text: 'napped {n}x' }, emoji: '😴' },
-  { id: 'phone', label: 'scrolling their phone', category: 'rest', points: ['couch1', 'couch2', 'study_beanbag'], anim: 'phone', duration: [2, 6],
+  { id: 'phone', label: 'scrolling their phone', category: 'rest', points: ['couch1', 'couch2', 'golf_beanbag'], anim: 'phone', duration: [2, 6],
     effects: { energy: 20, focus: -5 }, summary: { kind: 'time', text: 'doomscrolled for {t}' }, emoji: '📱' },
   { id: 'skincare', label: 'doing skincare', category: 'selfcare', points: ['vanity'], anim: 'skincare', duration: [2, 4],
     effects: { mood: 40 }, summary: { kind: 'count', text: 'did skincare {n}x' }, emoji: '🧴' },
-  { id: 'sleep', label: 'sleeping', category: 'sleep', points: ['bed1', 'bed2', 'couch1', 'study_beanbag', 'dojo_mat', 'dojo_mat2'], anim: 'sleep', duration: [0, 0],
+  { id: 'sleep', label: 'sleeping', category: 'sleep', points: ['bed1', 'bed2', 'couch1', 'golf_beanbag', 'dojo_mat', 'dojo_mat2'], anim: 'sleep', duration: [0, 0],
     effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤' },
   { id: 'wander', label: 'hanging out', category: 'wander', points: HALL, anim: 'idle', duration: [0.3, 1.2],
     effects: { energy: 2 }, summary: { kind: 'count', text: 'wandered the halls {n}x' }, emoji: '🚶' },
@@ -86,9 +84,8 @@ export const lines: Record<string, string[]> = {
   gymrest: ['water break', '90 seconds', 'whew'],
   code: ['it works??', 'why is this O(n²)', 'who wrote this. oh. me', 'ship it', 'git push --force? no.', 'one more test'],
   coffee: ['caffeine++', 'fuel', 'decaf is a lie'],
-  read: ['huh, interesting', 'one more chapter', 'highlighting this'],
-  leetcode: ['why is this O(n²)', 'two pointers?', 'dp again...', 'accepted!!'],
-  whiteboard: ['so if we draw it...', 'big O of what', 'hmm'],
+  range: ['fore!', 'slice again...', 'grip it and rip it', 'that one was pure', 'head down, head down'],
+  putt: ['in the hole!', 'lipped out?!', 'read the break', 'tap-in'],
   eat: ['so good', 'protein', 'nom'],
   snack: ['just a snack', 'midnight-ish snack'],
   shake: ['3000 calories...', 'why is it so thick', 'halfway?? no.', "can't feel my stomach", 'eat big get big', '🤢'],

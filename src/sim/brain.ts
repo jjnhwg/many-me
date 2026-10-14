@@ -19,9 +19,9 @@ export function needFactor(c: Clone, a: Activity): number {
     case 'sleep': return energy < 15 ? 2 : 1;
     case 'coffee': return focus < 40 ? 2.2 : focus > 85 ? 0.3 : 1;
     case 'bjj':
-    case 'gym': return energy < 30 ? 0.25 : 1;
-    case 'dev':
-    case 'study': return 0.35 + focus / 100;
+    case 'gym':
+    case 'golf': return energy < 30 ? 0.25 : 1;
+    case 'dev': return 0.35 + focus / 100;
     default: return 1;
   }
 }

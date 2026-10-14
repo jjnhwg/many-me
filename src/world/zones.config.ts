@@ -38,9 +38,9 @@ export const zones: Zone[] = [
     wallpaper: { base: '#d8d2c4', stripe: '#cfc8b8', trim: '#8c8576', pattern: 'plain' },
   },
   {
-    id: 'study', name: 'Study Nook', rect: { x: 0, y: 12, w: 10, h: 9 }, accent: '#c9873a',
-    floor: { a: '#9a6a3f', b: '#8d5f37', pattern: 'planks' },
-    wallpaper: { base: '#e7d2a8', stripe: '#dcc293', trim: '#6b4423', pattern: 'stripes' },
+    id: 'golf', name: 'Driving Range', rect: { x: 0, y: 12, w: 10, h: 9 }, accent: '#3f8f4f',
+    floor: { a: '#4f8a4a', b: '#477f43', pattern: 'carpet' },
+    wallpaper: { base: '#d6e8cf', stripe: '#c4dcbb', trim: '#2f5f3a', pattern: 'panels' },
   },
   {
     id: 'lounge', name: 'Lounge', rect: { x: 10, y: 12, w: 20, h: 9 }, accent: '#f29bb8',
@@ -102,11 +102,10 @@ export const points: Point[] = [
   // Dev
   { id: 'dev_desk1', tile: [24, 2], dir: 'NE' },
   { id: 'dev_coffee', tile: [28, 5], dir: 'SE' },
-  // Study
-  { id: 'study_beanbag', tile: [2, 16], dir: 'SE', lie: { z: 4 } },
-  { id: 'study_chair', tile: [4, 19], dir: 'SE' },
-  { id: 'study_laptop', tile: [6, 14], dir: 'NE' },
-  { id: 'study_board', tile: [7, 16], dir: 'NE' },
+  // Driving range: the golfer faces SW so the swing follows through toward the screen on the back wall.
+  { id: 'golf_tee', tile: [3, 16], dir: 'SW' },
+  { id: 'golf_putt', tile: [6, 20], dir: 'SE' },
+  { id: 'golf_beanbag', tile: [8, 14], dir: 'SE', lie: { z: 4 } },
   // Lounge
   { id: 'couch1', tile: [11, 15], dir: 'SE', lie: { z: 7, offset: [0, 0.5] }, blocks: ['couch2'] },
   { id: 'couch2', tile: [11, 16], dir: 'SE' },
@@ -178,16 +177,14 @@ export const props: Prop[] = [
   // Hall
   { kind: 'plant', tile: [29, 9], solid: true },
   { kind: 'window', wall: { axis: 'x', at: 0, from: 9.4, to: 11.6, z0: 16, z1: 38 } },
-  // Study
-  { kind: 'bookshelf', tile: [0, 13], size: [1, 2], solid: true },
-  { kind: 'floorlamp', tile: [1, 15], solid: true },
-  { kind: 'beanbag', tile: [2, 16], point: 'study_beanbag' },
-  { kind: 'armchair', tile: [4, 19], point: 'study_chair' },
-  { kind: 'studydesk', tile: [6, 13], solid: true, point: 'study_laptop' },
-  { kind: 'officechair', tile: [6, 14] },
-  { kind: 'whiteboard', tile: [7, 15], solid: true, point: 'study_board' },
-  { kind: 'plant', tile: [9, 20], solid: true },
-  { kind: 'window', wall: { axis: 'x', at: 0, from: 17.4, to: 19.6, z0: 16, z1: 38 } },
+  // Driving range
+  { kind: 'golfscreen', wall: { axis: 'x', at: 0, from: 13.6, to: 18.6, z0: 6, z1: 40 }, point: 'golf_tee' },
+  { kind: 'ballbucket', tile: [4, 17], solid: true },
+  { kind: 'golfbag', tile: [0, 20], solid: true },
+  { kind: 'floorlamp', tile: [0, 12], solid: true },
+  { kind: 'beanbag', tile: [8, 14], point: 'golf_beanbag' },
+  { kind: 'golfflag', tile: [8, 20], solid: true, point: 'golf_putt' },
+  { kind: 'plant', tile: [9, 12], solid: true },
   // Lounge — living
   { kind: 'couch', tile: [11, 15], size: [1, 2], point: 'couch1' },
   { kind: 'coffeetable', tile: [13, 15], size: [1, 2], solid: true },

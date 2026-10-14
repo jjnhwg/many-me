@@ -343,28 +343,6 @@ const serverrack: DrawFn = (g, p, c) => {
   }
 };
 
-// ---- Study ---------------------------------------------------------------------------
-
-const BOOK_COLORS = ['#8c3b3b', '#2f5fbf', '#c9a24a', '#3f8f4f', '#7b3fa0', '#e8642c', '#f4f1ea'];
-
-const bookshelf: DrawFn = (g, p) => {
-  const x = X(p), y = Y(p);
-  box(g, x + 0.05, y + 0.05, 0.45, 1.9, 36, '#6b4423');
-  for (let s = 0; s < 4; s++) {
-    const z = 3 + s * 8.5;
-    quad(g, faceX(x + 0.5, y + 0.1, y + 1.9, z, z + 7), '#3d2614');
-    let v = y + 0.12;
-    let k = s * 5 + x;
-    while (v < y + 1.85) {
-      const w = 0.07 + ((k * 7) % 4) * 0.025;
-      const h = 4.5 + ((k * 3) % 3);
-      quad(g, faceX(x + 0.5, v, Math.min(v + w, y + 1.88), z, z + h), BOOK_COLORS[k % BOOK_COLORS.length]);
-      v += w + 0.012;
-      k++;
-    }
-  }
-};
-
 const floorlamp: DrawFn = (g, p) => {
   const x = X(p), y = Y(p);
   shadow(g, x + 0.5, y + 0.5, 0.2);
@@ -382,45 +360,62 @@ const beanbag: DrawFn = (g, p) => {
   rects(g, cx, cy, [[-11, -8, 22, 9, '#7b4fa0'], [-9, -11, 18, 4, '#9466bb'], [-11, -1, 22, 1, '#5e3a7d'], [-6, -10, 6, 1, '#ad86cf']], OUTLINE);
 };
 
-const armchairBase: DrawFn = (g, p) => {
-  const x = X(p), y = Y(p);
-  shadow(g, x + 0.5, y + 0.5, 0.45);
-  box(g, x + 0.08, y + 0.1, 0.22, 0.8, 18, '#3f6f6a');
-  box(g, x + 0.15, y + 0.1, 0.75, 0.15, 12, '#3f6f6a');
-  box(g, x + 0.2, y + 0.2, 0.7, 0.62, 7, '#4f8a84');
+
+// ---- Driving range -------------------------------------------------------------------
+
+/** Golf simulator screen on the back wall. While someone is at the tee, a ball flies off after each impact frame. */
+const golfscreen: DrawFn = (g, p, c) => {
+  const w = p.wall!;
+  wallFrame(g, p, '#2a2a2e', c.night > 0.5 && !busy(c) ? '#28405a' : '#9fd4f0', 0.1, 2);
+  const U = (k: number) => w.from + 0.1 + k * (w.to - w.from - 0.2);
+  const P = (k: number, z: number) => wallPt(w.axis, w.at, U(k), z);
+  const zh = w.z0 + 2 + (w.z1 - w.z0 - 4) * 0.45; // horizon
+  quad(g, wallQuad(w.axis, w.at, U(0), U(1), w.z0 + 2, zh), '#4f9a48');
+  quad(g, [P(0.25, w.z0 + 2), P(0.75, w.z0 + 2), P(0.54, zh), P(0.46, zh)], '#7cc46a');
+  quad(g, wallQuad(w.axis, w.at, U(0), U(1), zh, zh + 1.5), '#3d7a3a');
+  // Yardage flags down the fairway.
+  for (const [k, z, col] of [[0.38, 0.55, '#ff4f4f'], [0.6, 0.78, '#ffd23f'], [0.5, 0.92, '#ffffff']] as const) {
+    const [sx, sy] = P(k, w.z0 + 2 + (zh - w.z0 - 2) * z);
+    g.rect(Math.round(sx), Math.round(sy) - 3, 1, 3).fill('#f4f1ea');
+    g.rect(Math.round(sx) + 1, Math.round(sy) - 3, 2, 1).fill(col);
+  }
+  const o = c.occupant;
+  if (o && busy(c, 'range')) {
+    // Same clock as the swing pose: 6 frames x 350 ms, impact at 1050 ms.
+    const cyc = (c.t + o.id.length * 137) % 2100;
+    if (cyc >= 1050) {
+      const u = (cyc - 1050) / 1050;
+      const [sx, sy] = P(0.5 + 0.08 * Math.sin(u * 3), w.z0 + 3 + (zh + 8 - w.z0 - 3) * Math.sin((u * Math.PI) / 2) - u * u * 6);
+      const s = u < 0.5 ? 2 : 1;
+      g.rect(Math.round(sx), Math.round(sy), s, s).fill('#ffffff');
+    }
+  }
 };
 
-const armchairFront: DrawFn = (g, p) => box(g, X(p) + 0.15, Y(p) + 0.78, 0.75, 0.14, 12, '#3f6f6a');
-
-const studydesk: DrawFn = (g, p, c) => {
+const ballbucket: DrawFn = (g, p) => {
   const x = X(p), y = Y(p);
-  for (const [lx, ly] of [[0.07, 0.15], [0.86, 0.15], [0.07, 0.78], [0.86, 0.78]]) box(g, x + lx, y + ly, 0.07, 0.07, 12, '#6b4423');
-  box(g, x + 0.02, y + 0.1, 0.96, 0.78, 2, '#8a5a32', { z0: 12 });
-  box(g, x + 0.3, y + 0.42, 0.4, 0.28, 1, '#c8c8d0', { z0: 14 });
-  box(g, x + 0.3, y + 0.38, 0.4, 0.04, 9, '#c8c8d0', { z0: 15 });
-  screen(g, y + 0.42, x + 0.32, x + 0.68, 16, 23, c, 5);
-  box(g, x + 0.8, y + 0.2, 0.1, 0.1, 10, '#2a2a2e', { z0: 14 });
-  box(g, x + 0.75, y + 0.15, 0.2, 0.2, 3, '#f3d9a0', { z0: 22 });
-  box(g, x + 0.08, y + 0.2, 0.15, 0.4, 3, '#8c3b3b', { z0: 14 });
+  shadow(g, x + 0.5, y + 0.5, 0.25);
+  box(g, x + 0.32, y + 0.32, 0.36, 0.36, 6, '#e8642c');
+  const [cx, cy] = tileCenter(x, y, 6);
+  rects(g, cx, cy, [[-4, -2, 2, 2, '#ffffff'], [-1, -3, 2, 2, '#f4f1ea'], [2, -2, 2, 2, '#ffffff'], [0, -1, 2, 1, '#e6e1d6']]);
 };
 
-const whiteboard: DrawFn = (g, p, c) => {
+const golfbag: DrawFn = (g, p) => {
   const x = X(p), y = Y(p);
-  box(g, x + 0.12, y + 0.6, 0.06, 0.06, 12, '#8a8f99');
-  box(g, x + 0.82, y + 0.6, 0.06, 0.06, 12, '#8a8f99');
-  box(g, x + 0.05, y + 0.6, 0.9, 0.08, 24, '#8a8f99', { z0: 10 });
-  const gy = y + 0.68;
-  quad(g, faceY(gy, x + 0.09, x + 0.91, 12, 32), '#f8f8f6');
-  // A graph that slowly fills in while someone is at the board.
-  const progress = busy(c) ? Math.min(1, (c.simTime - c.occupant!.current!.startedAt) / 90_000) : 1;
-  const P = (u: number, z: number) => iso(x + 0.12 + u * 0.76, gy, 13 + z * 17);
-  line(g, P(0.05, 0), P(0.05, 1), '#2a2a2e');
-  line(g, P(0.05, 0.05), P(1, 0.05), '#2a2a2e');
-  const pts = [[0.05, 0.1], [0.25, 0.2], [0.45, 0.18], [0.65, 0.5], [0.85, 0.85]];
-  const n = Math.max(2, Math.ceil(progress * pts.length));
-  for (let i = 1; i < n; i++) line(g, P(pts[i - 1][0], pts[i - 1][1]), P(pts[i][0], pts[i][1]), '#d33');
-  line(g, P(0.15, 0.9), P(0.4, 0.9), '#2f5fbf');
-  line(g, P(0.15, 0.78), P(0.3, 0.78), '#2f5fbf');
+  shadow(g, x + 0.5, y + 0.5, 0.22);
+  box(g, x + 0.36, y + 0.36, 0.28, 0.28, 16, '#1f4f8f');
+  box(g, x + 0.35, y + 0.35, 0.3, 0.3, 2, '#f4f1ea', { z0: 10 });
+  const [cx, cy] = tileCenter(x, y, 16);
+  rects(g, cx, cy, [[-3, -5, 1, 5, '#c0c4ca'], [-1, -7, 1, 7, '#c0c4ca'], [2, -4, 1, 4, '#c0c4ca'], [-4, -6, 2, 2, '#2a2a2e'], [-2, -9, 3, 3, '#e8642c'], [2, -5, 2, 2, '#2a2a2e']], OUTLINE);
+};
+
+const golfflag: DrawFn = (g, p, c) => {
+  const x = X(p), y = Y(p);
+  floorEllipse(g, x + 0.5, y + 0.5, 0.13, '#1a1a1a');
+  box(g, x + 0.48, y + 0.48, 0.04, 0.04, 24, '#f4f1ea');
+  const [cx, cy] = tileCenter(x, y, 24);
+  const flap = Math.sin(c.t / 260) > 0 ? 6 : 5;
+  rects(g, cx, cy, [[1, 0, flap, 4, '#d33b3b'], [1, 3, flap, 1, '#a82a2a']]);
 };
 
 // ---- Lounge -----------------------------------------------------------------------------
@@ -571,13 +566,15 @@ export const PROP_DEFS: Record<string, PropDef> = {
   plant: one(plant, true),
   serverrack: { parts: [{ draw: serverrack, animated: true }], light: (p, c) =>
     ({ gx: X(p) + 0.5, gy: Y(p) + 1, z: 14, r: 1.2, color: '#3ff0d8', strength: c.night * 0.5 }) },
-  bookshelf: one(bookshelf),
   floorlamp: { parts: [{ draw: floorlamp }], light: lampLight(28) },
   beanbag: { parts: [{ draw: beanbag }], low: true },
-  armchair: { parts: [{ draw: armchairBase }, { draw: armchairFront, layer: 80 }], low: true },
-  studydesk: { parts: [{ draw: studydesk, animated: true }], light: (p, c) =>
-    c.night > 0.05 || c.occupant ? { gx: X(p) + 0.8, gy: Y(p) + 0.5, z: 22, r: 1.5, color: '#ffcf7a', strength: Math.max(c.night, 0.2) } : null },
-  whiteboard: one(whiteboard, true),
+  golfscreen: { parts: [{ draw: golfscreen, animated: true }], light: (p, c) => {
+    const w = p.wall!;
+    return busy(c) || c.night < 0.5 ? { gx: w.at + 1, gy: (w.from + w.to) / 2, z: 20, r: 2.4, color: '#9fd4f0', strength: 0.15 + c.night * 0.5 } : null;
+  } },
+  ballbucket: one(ballbucket),
+  golfbag: one(golfbag),
+  golfflag: one(golfflag, true),
   couch: { parts: [{ draw: couchBase }, { draw: couchFront, layer: 80, at: [0, 1] }], low: true },
   coffeetable: one(coffeetable),
   fridge: { parts: [{ draw: fridge, animated: true }], light: (p, c) =>
