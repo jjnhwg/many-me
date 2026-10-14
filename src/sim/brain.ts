@@ -33,6 +33,7 @@ export function chooseActivity(world: World, c: Clone): Choice | null {
 
   const options: { item: Choice; weight: number }[] = [];
   for (const a of activities) {
+    if (a.only && !a.only.includes(c.id)) continue;
     const pointId = world.freePoint(a, c.id);
     if (!pointId) continue;
     let w = (cfg.affinities[a.category] ?? 0.2) * scheduleWeight(a.category, hour) * needFactor(c, a);

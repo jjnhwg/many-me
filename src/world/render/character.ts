@@ -6,7 +6,7 @@ import { shade } from './draw';
 
 type Legs = 'stand' | 'walkA' | 'walkB' | 'sit' | 'squat1' | 'squat2' | 'lunge';
 type Arm = 'down' | 'swingF' | 'swingB' | 'chest' | 'type1' | 'type2' | 'up' | 'face' | 'shoulder' | 'reach' | 'out' | 'wave1' | 'wave2';
-type Held = 'book' | 'bookOpen' | 'bowl' | 'mug' | 'mugUp' | 'phone' | 'barbell' | 'dumbbellsLow' | 'dumbbellsHigh' | 'marker' | 'bottle' | 'bottleUp' | 'apple';
+type Held = 'book' | 'bookOpen' | 'bowl' | 'mug' | 'mugUp' | 'phone' | 'barbell' | 'dumbbellsLow' | 'dumbbellsHigh' | 'marker' | 'bottle' | 'bottleUp' | 'apple' | 'shaker' | 'shakerUp';
 
 export type Figure = {
   legs: Legs;
@@ -22,12 +22,12 @@ export type Figure = {
 
 export type PoseName =
   | 'idle' | 'walk' | 'run' | 'type' | 'squat' | 'press' | 'drill' | 'roll' | 'tapRoll' | 'stretch' | 'read'
-  | 'sleep' | 'eat' | 'eatStand' | 'drink' | 'phone' | 'skincare' | 'write' | 'rest' | 'facepalm' | 'fistpump'
+  | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'write' | 'rest' | 'facepalm' | 'fistpump'
   | 'wave' | 'dozeSit';
 
 export type PoseResult = { fig: Figure; rotation: number; lying: boolean };
 
-const SITTING = new Set<PoseName>(['type', 'press', 'read', 'eat', 'phone', 'rest', 'facepalm', 'fistpump', 'dozeSit']);
+const SITTING = new Set<PoseName>(['type', 'press', 'read', 'eat', 'shake', 'phone', 'rest', 'facepalm', 'fistpump', 'dozeSit']);
 
 /** Pick the figure for a pose at time t (ms). */
 export function pose(name: PoseName, t: number, back: boolean): PoseResult {
@@ -78,6 +78,14 @@ export function pose(name: PoseName, t: number, back: boolean): PoseResult {
     case 'eatStand': {
       const up = f(650, 2) === 1;
       fig = { ...base, la: 'chest', ra: up ? 'face' : 'chest', held: name === 'eat' ? ['bowl'] : ['apple'] };
+      break;
+    }
+    case 'shake': {
+      // Sip, sip, regret, stare at what's left.
+      const k = f(900, 4);
+      fig = k < 2
+        ? { ...base, ra: 'face', held: ['shakerUp'], eyes: 'closed' }
+        : { ...base, ra: 'chest', held: ['shaker'], eyes: k === 2 ? 'closed' : 'down', headDy: k === 2 ? 2 : 1 };
       break;
     }
     case 'drink': { const up = f(900, 2) === 1; fig = { ...base, ra: up ? 'face' : 'chest', held: [up ? 'mugUp' : 'mug'] }; break; }
@@ -236,6 +244,8 @@ export function figureRects(o: Outfit, fig: Figure, look: Look = avatar): R[] {
       case 'marker': add(tx + 17, ty - 5, 1, 3, '#d33'); break;
       case 'bottle': add(tx + 9, ty + 2, 2, 4, '#5ab0ff'); break;
       case 'bottleUp': add(tx + 6, ty - 5, 2, 4, '#5ab0ff'); break;
+      case 'shaker': add(tx + 9, ty - 1, 4, 1, '#7b3fa0'); add(tx + 9, ty, 4, 7, '#efe6d6'); add(tx + 9, ty + 3, 4, 4, '#b98a62'); break;
+      case 'shakerUp': add(tx + 5, ty - 9, 4, 1, '#7b3fa0'); add(tx + 5, ty - 8, 4, 7, '#efe6d6'); add(tx + 5, ty - 8, 4, 3, '#b98a62'); break;
     }
   }
   return out;

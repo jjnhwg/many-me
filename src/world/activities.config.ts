@@ -6,7 +6,7 @@ export type Needs = { energy: number; focus: number; hunger: number; mood: numbe
 
 export type Anim =
   | 'idle' | 'walk' | 'type' | 'squat' | 'press' | 'run' | 'drill' | 'roll' | 'stretch'
-  | 'read' | 'sleep' | 'eat' | 'eatStand' | 'drink' | 'phone' | 'skincare' | 'write' | 'rest';
+  | 'read' | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'write' | 'rest';
 
 export type Activity = {
   id: string;
@@ -19,6 +19,7 @@ export type Activity = {
   focusTask?: boolean;        // duration scales with focus
   summary: { kind: 'time' | 'count'; text: string }; // "{t}" = duration, "{n}" = count
   emoji: string;
+  only?: string[];            // clone ids allowed to pick it (default: everyone)
 };
 
 const HALL = ['hall1', 'hall2', 'hall3', 'hall4', 'hall5', 'hall6'];
@@ -57,6 +58,8 @@ export const activities: Activity[] = [
     effects: { hunger: -900, energy: 15, mood: 20 }, summary: { kind: 'count', text: 'ate {n} meals' }, emoji: '🍜' },
   { id: 'snack', label: 'raiding the fridge', category: 'eat', points: ['fridge'], anim: 'eatStand', duration: [1, 2],
     effects: { hunger: -700, mood: 15 }, summary: { kind: 'count', text: 'raided the fridge {n}x' }, emoji: '🧃' },
+  { id: 'shake', label: 'fighting a 3000-calorie shake', category: 'eat', points: ['kitchen_seat1', 'kitchen_seat2'], anim: 'shake', duration: [6, 12],
+    effects: { hunger: -1200, energy: 10, mood: -12 }, summary: { kind: 'count', text: 'finished {n} mass-gainer shakes' }, emoji: '🥤', only: ['gym'] },
   // Rest / self-care
   { id: 'nap', label: 'napping', category: 'rest', points: ['couch1', 'study_beanbag', 'dojo_mat'], anim: 'sleep', duration: [10, 25],
     effects: { energy: 70, focus: 40 }, summary: { kind: 'count', text: 'napped {n}x' }, emoji: '😴' },
@@ -88,6 +91,7 @@ export const lines: Record<string, string[]> = {
   whiteboard: ['so if we draw it...', 'big O of what', 'hmm'],
   eat: ['so good', 'protein', 'nom'],
   snack: ['just a snack', 'midnight-ish snack'],
+  shake: ['3000 calories...', 'why is it so thick', 'halfway?? no.', "can't feel my stomach", 'eat big get big', '🤢'],
   phone: ['lol', 'one more video', 'where did the hour go'],
   skincare: ['glow up', 'SPF is life', 'moisturize'],
   walk: ['brb', 'hmm', 'where was I'],

@@ -71,7 +71,7 @@ export const roster: CloneConfig[] = [
   {
     id: 'gym', name: 'Justin', role: 'Gym', outfit: 'gym', homeZone: 'gym', color: '#e8642c', speed: 1.9,
     affinities: { gym: 7, bjj: 0.8, dev: 0.2, study: 0.3, coffee: 0.4, eat: 1.3, rest: 0.9, selfcare: 0.5, sleep: 1, wander: 0.6 },
-    followUps: { squat: { gymrest: 5 }, press: { gymrest: 5 }, gymrest: { squat: 1.6, press: 1.6 } },
+    followUps: { squat: { gymrest: 5, shake: 2 }, press: { gymrest: 5, shake: 2 }, gymrest: { squat: 1.6, press: 1.6 } },
     startPoint: 'gym_squat',
   },
   {
