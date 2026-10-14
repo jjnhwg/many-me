@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Many Me**: an isometric diorama where five versions of Justin (BJJ, Gym, Dev, Study, Chill) live on
+**Many Me**: an isometric diorama where five versions of Justin (BJJ, Gym, Dev, Golf, Chill) plus his girlfriend Emily live on
 the user's local clock and keep simulating while the tab is closed. See `README.md` for controls and layout.
 
 ## Stack and commands
