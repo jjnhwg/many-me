@@ -100,8 +100,7 @@ export const points: Point[] = [
   { id: 'gym_tread', tile: [11, 7], dir: 'SE' },
   { id: 'gym_stool', tile: [18, 6], dir: 'SW' },
   // Dev
-  { id: 'dev_desk1', tile: [22, 2], dir: 'NE' },
-  { id: 'dev_desk2', tile: [26, 2], dir: 'NE' },
+  { id: 'dev_desk1', tile: [24, 2], dir: 'NE' },
   { id: 'dev_coffee', tile: [28, 5], dir: 'SE' },
   // Study
   { id: 'study_beanbag', tile: [2, 16], dir: 'SE', lie: { z: 4 } },
@@ -167,10 +166,8 @@ export const props: Prop[] = [
   { kind: 'mirror', wall: { axis: 'y', at: 0, from: 14.4, to: 17.6, z0: 8, z1: 38 } },
   { kind: 'window', wall: { axis: 'y', at: 0, from: 10.8, to: 12.4, z0: 16, z1: 38 } },
   // Dev
-  { kind: 'desk', tile: [22, 1], solid: true, point: 'dev_desk1' },
-  { kind: 'desk', tile: [26, 1], solid: true, point: 'dev_desk2' },
-  { kind: 'officechair', tile: [22, 2] },
-  { kind: 'officechair', tile: [26, 2] },
+  { kind: 'desk', tile: [24, 1], solid: true, point: 'dev_desk1' },
+  { kind: 'officechair', tile: [24, 2] },
   { kind: 'coffeemachine', tile: [29, 5], solid: true, point: 'dev_coffee' },
   { kind: 'plant', tile: [29, 1], solid: true },
   { kind: 'plant', tile: [20, 7], solid: true },

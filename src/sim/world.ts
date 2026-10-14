@@ -1,7 +1,7 @@
 import { Grid } from '../engine/pathfinding';
 import { Rng } from '../engine/rng';
 import { roster } from '../world/clones.config';
-import { FRIEND_GREETINGS, GREETINGS, type Activity } from '../world/activities.config';
+import { activityById, FRIEND_GREETINGS, GREETINGS, type Activity } from '../world/activities.config';
 import { points, pointById, props, walls, WORLD_H, WORLD_W } from '../world/zones.config';
 import { createClone, updateClone } from './clone';
 import type { Clone } from './types';
@@ -61,7 +61,27 @@ export class World {
     for (const cfg of roster) {
       if (!clones.some((c) => c.id === cfg.id)) clones.push(createClone(cfg, Math.random));
     }
+    // Rooms and activities can be removed between versions; drop anything that no longer exists.
+    const grid = buildGrid();
+    const stale = (s?: { activityId: string; pointId: string }) => !!s && (!activityById.has(s.activityId) || !pointById.has(s.pointId));
+    const realActivity = (id: string) => activityById.has(id);
     for (const c of clones) {
+      // A saved walk may route through furniture that has since moved, so walkers re-plan too.
+      if (stale(c.current) || stale(c.target) || c.state === 'walking') {
+        c.current = undefined;
+        c.target = undefined;
+        c.path = [];
+        c.state = 'idle';
+        c.idleFor = 0;
+      }
+      if (c.lastActivity && !realActivity(c.lastActivity)) c.lastActivity = undefined;
+      c.log = c.log.filter((l) => realActivity(l.activityId));
+      c.totalsMs = Object.fromEntries(Object.entries(c.totalsMs).filter(([id]) => realActivity(id)));
+      c.counts = Object.fromEntries(Object.entries(c.counts).filter(([id]) => realActivity(id)));
+      if (!c.current && !grid.isWalkable(Math.round(c.pos.x), Math.round(c.pos.y))) {
+        const start = pointById.get(roster.find((r) => r.id === c.id)!.startPoint)!;
+        c.pos = { x: start.tile[0], y: start.tile[1] };
+      }
       c.prev = { ...c.pos };
       c.bubble = undefined;
       c.moment = undefined;

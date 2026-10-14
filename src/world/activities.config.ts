@@ -41,7 +41,7 @@ export const activities: Activity[] = [
   { id: 'gymrest', label: 'resting between sets', category: 'gym', points: ['gym_stool'], anim: 'rest', duration: [1, 2],
     effects: { energy: 25 }, summary: { kind: 'count', text: 'took {n} breathers' }, emoji: '💧' },
   // Dev
-  { id: 'code', label: 'coding', category: 'dev', points: ['dev_desk1', 'dev_desk2'], anim: 'type', duration: [6, 15], focusTask: true,
+  { id: 'code', label: 'coding', category: 'dev', points: ['dev_desk1'], anim: 'type', duration: [6, 15], focusTask: true,
     effects: { energy: -8, focus: -30 }, summary: { kind: 'time', text: 'coded for {t}' }, emoji: '💻' },
   { id: 'coffee', label: 'getting coffee', category: 'coffee', points: ['dev_coffee'], anim: 'drink', duration: [1, 2],
     effects: { focus: 600, energy: 120 }, summary: { kind: 'count', text: 'had {n} coffees' }, emoji: '☕' },
