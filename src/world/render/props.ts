@@ -532,6 +532,98 @@ const vanity: DrawFn = (g, p, c) => {
 
 // ---- Registry ------------------------------------------------------------------------------
 
+// ---- Pokémon room ------------------------------------------------------------------
+
+/** Pokémon Center healing machine: six ball slots that light up in turn. */
+const healer: DrawFn = (g, p, c) => {
+  const x = X(p), y = Y(p);
+  box(g, x + 0.05, y + 0.15, 1.9, 0.7, 14, '#f4f1ea', { top: '#ffffff' });
+  box(g, x + 0.05, y + 0.15, 1.9, 0.7, 3, '#e84a4a', { z0: 14 });
+  const lit = Math.floor(c.t / 400) % 7;
+  for (let i = 0; i < 6; i++) {
+    const [sx, sy] = iso(x + 0.3 + (i % 3) * 0.6, y + 0.35 + Math.floor(i / 3) * 0.3, 17);
+    g.rect(Math.round(sx) - 1, Math.round(sy) - 1, 3, 2).fill(i === lit ? '#7dff9a' : '#e84a4a');
+    g.rect(Math.round(sx) - 1, Math.round(sy), 3, 1).fill('#f4f1ea');
+  }
+  quad(g, faceY(y + 0.85, x + 0.6, x + 1.4, 4, 11), '#9fd4f0');
+};
+
+/** A Poké Ball emblem on the wall. */
+const pokeposter: DrawFn = (g, p) => {
+  const w = p.wall!;
+  const cu = (w.from + w.to) / 2;
+  const cz = (w.z0 + w.z1) / 2;
+  const ru = (w.to - w.from) / 2;
+  const rz = (w.z1 - w.z0) / 2;
+  const arc = (a0: number, a1: number, k: number) => Array.from({ length: 9 }, (_, i) => {
+    const a = a0 + ((a1 - a0) * i) / 8;
+    return wallPt(w.axis, w.at, cu + Math.cos(a) * ru * k, cz + Math.sin(a) * rz * k);
+  });
+  quad(g, arc(0, Math.PI * 2, 1.05), '#2a2a2e');
+  quad(g, arc(0, Math.PI, 1), '#e84a4a');
+  quad(g, arc(Math.PI, Math.PI * 2, 1), '#f4f1ea');
+  quad(g, wallQuad(w.axis, w.at, w.from, w.to, cz - 1, cz + 1), '#2a2a2e');
+  quad(g, arc(0, Math.PI * 2, 0.28), '#2a2a2e');
+  quad(g, arc(0, Math.PI * 2, 0.17), '#f4f1ea');
+};
+
+/** Tall wooden perch; Gliscor hangs from the crossbar to sleep. */
+const perch: DrawFn = (g, p) => {
+  const x = X(p), y = Y(p);
+  shadow(g, x + 0.5, y + 0.5, 0.3);
+  box(g, x + 0.25, y + 0.25, 0.5, 0.5, 2, '#6b4423');
+  box(g, x + 0.44, y + 0.44, 0.12, 0.12, 36, '#8a5a32');
+  box(g, x + 0.1, y + 0.44, 0.8, 0.12, 2, '#8a5a32', { z0: 34 });
+};
+
+/** Bullseye on a stand: Flamethrower and Water Shuriken practice. It flashes when hit. */
+const target: DrawFn = (g, p, c) => {
+  const x = X(p), y = Y(p);
+  shadow(g, x + 0.5, y + 0.5, 0.3);
+  box(g, x + 0.45, y + 0.45, 0.1, 0.1, 8, '#6b4423');
+  const hit = busy(c) && Math.floor(c.t / 300) % 4 >= 2;
+  const ring = (k: number, col: string) => {
+    const pts: Pt[] = Array.from({ length: 12 }, (_, i) => {
+      const a = (i / 12) * Math.PI * 2;
+      return iso(x + 0.5, y + 0.5 + Math.cos(a) * 0.4 * k, 18 + Math.sin(a) * 9 * k);
+    });
+    quad(g, pts, col);
+  };
+  ring(1, hit ? '#fff3c0' : '#f4f1ea');
+  ring(0.7, '#e84a4a');
+  ring(0.42, '#f4f1ea');
+  ring(0.18, '#e84a4a');
+};
+
+/** Flat rock in a small pond for Greninja. */
+const pondrock: DrawFn = (g, p) => {
+  const x = X(p), y = Y(p);
+  box(g, x + 0.15, y + 0.15, 0.7, 0.7, 6, '#8a8f99', { top: '#a9aeb7' });
+  box(g, x + 0.3, y + 0.25, 0.3, 0.25, 1, '#9aa0aa', { z0: 6 });
+};
+
+const dogbed: DrawFn = (g, p) => {
+  const x = X(p), y = Y(p);
+  shadow(g, x + 0.5, y + 0.5, 0.5);
+  box(g, x + 0.02, y + 0.02, 0.96, 0.96, 4, '#c0392b');
+  box(g, x + 0.15, y + 0.15, 0.7, 0.7, 1, '#f3d9a0', { z0: 2 });
+  box(g, x + 0.02, y + 0.02, 0.2, 0.96, 3, '#a83226', { z0: 4 });
+  box(g, x + 0.02, y + 0.02, 0.96, 0.2, 3, '#a83226', { z0: 4 });
+};
+
+const sleepmat: DrawFn = (g, p) => {
+  const x = X(p), y = Y(p);
+  box(g, x + 0.1, y + 0.15, 0.8, 0.7, 1, '#3a6fc4', { top: '#5a8ad8' });
+};
+
+const berrybowl: DrawFn = (g, p) => {
+  const x = X(p), y = Y(p);
+  shadow(g, x + 0.5, y + 0.5, 0.3);
+  box(g, x + 0.25, y + 0.25, 0.5, 0.5, 4, '#2f5fbf');
+  const [cx, cy] = tileCenter(x, y, 4);
+  rects(g, cx, cy, [[-4, -2, 2, 2, '#d33b3b'], [-1, -3, 2, 2, '#3f6fd8'], [2, -2, 2, 2, '#ffb3c7'], [0, -1, 2, 1, '#7a3fa0']]);
+};
+
 const wall = (draw: DrawFn, animated = false): PropDef => ({ parts: [{ draw, animated }] });
 const one = (draw: DrawFn, animated = false): PropDef => ({ parts: [{ draw, animated }] });
 
@@ -585,6 +677,14 @@ export const PROP_DEFS: Record<string, PropDef> = {
   bed: { parts: [{ draw: bed }], low: true },
   blanket: { parts: [{ draw: blanket, layer: 80, at: [1, 1] }] },
   nightstand: { parts: [{ draw: nightstand }], light: lampLight(18) },
+  healer: one(healer, true),
+  pokeposter: wall(pokeposter),
+  perch: one(perch),
+  target: one(target, true),
+  pondrock: { parts: [{ draw: pondrock }], low: true },
+  dogbed: { parts: [{ draw: dogbed }], low: true },
+  berrybowl: one(berrybowl),
+  sleepmat: { parts: [{ draw: sleepmat }], low: true },
   vanity: { parts: [{ draw: vanity, animated: true }], light: (p, c) =>
     c.night > 0.05 ? { gx: X(p) + 0.5, gy: Y(p) + 0.8, z: 26, r: 1.3, color: '#fff3e0', strength: c.night * 0.7 } : null },
 };

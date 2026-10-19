@@ -1,6 +1,6 @@
 # Many Me
 
-A cozy isometric diorama where five versions of Justin (BJJ, Gym, Dev, Golf, Chill) live their own lives,
+A cozy isometric diorama where five versions of Justin (BJJ, Gym, Dev, Golf, Chill) and five Pokémon (Arcanine, Greninja, Gliscor, Lucario, Latios) live their own lives,
 follow a daily rhythm tied to your local clock, and keep living while the tab is closed.
 
 ## Run it

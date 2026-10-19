@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Many Me**: an isometric diorama where five versions of Justin (BJJ, Gym, Dev, Golf, Chill) live on
+**Many Me**: an isometric diorama where five versions of Justin (BJJ, Gym, Dev, Golf, Chill) and five Pokémon live on
 the user's local clock and keep simulating while the tab is closed. See `README.md` for controls and layout.
 
 ## Stack and commands
@@ -15,7 +15,7 @@ React 19 + TypeScript + PixiJS v8 + Zustand, bundled with Vite.
 - `src/engine/`: iso math and depth sort, A* pathfinding, fixed-step loop, seeded RNG
 - `src/sim/`: clone state machine and needs, activity brain, schedule, offline catch-up
 - `src/world/*.config.ts`: all data (zones, props, activities, dialogue, clone roster)
-- `src/world/render/`: procedural pixel art and the Pixi `Game` class
+- `src/world/render/`: procedural pixel art and the Pixi `Game` class (Pokémon sprites in `pokemon.ts`)
 - `src/ui/`: React overlay (HUD, clone panel, time controls, hover tag, away card)
 - `src/store/`: Zustand UI store and `localStorage` persistence (key `many-me:v1`)
 
@@ -24,6 +24,7 @@ React 19 + TypeScript + PixiJS v8 + Zustand, bundled with Vite.
 - The sim ticks at 10 Hz independently of rendering and must stay renderable-free, so it can
   fast-forward headlessly (30 s steps, capped at 24 h) on return.
 - New clones, activities, props or dialogue are data changes in `src/world/*.config.ts`, not code changes.
+- Pokémon are roster entries with `species`; they only do activities whose `only` lists them, while Justins skip those.
 - If the save shape changes, bump the `localStorage` key version.
 
 ## Commits and pushes to main

@@ -17,6 +17,7 @@ export function scheduleWeight(cat: Category, h: number): number {
     case 'gym': return night * (between(h, 6, 11) ? 2.4 : between(h, 17, 21) ? 1.0 : between(h, 11, 17) ? 0.8 : 0.3);
     case 'dev': return night * (between(h, 12, 19) ? 2.4 : between(h, 9, 12) ? 1.3 : between(h, 19, 24) ? 1.0 : 0.4);
     case 'bjj': return night * (between(h, 17, 22) ? 2.6 : between(h, 10, 13) ? 1.0 : 0.5);
+    case 'pokemon': return night * (between(h, 16, 23) ? 1.8 : 1);
     case 'golf': return night * (between(h, 7, 11) || between(h, 15, 19) ? 2 : 0.8);
     case 'eat': return night * (between(h, 7, 9.5) || between(h, 12, 13.5) || between(h, 18, 20) ? 3 : 0.35);
     case 'coffee': return night * (between(h, 7, 11) ? 2 : between(h, 13, 16) ? 1.5 : between(h, 20, 24) ? 0.15 : 0.7);

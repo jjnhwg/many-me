@@ -18,6 +18,8 @@ export type SaveData = {
 
 export const SIM_STEP_S = 0.1; // 10 Hz
 
+const POKEMON = new Set(roster.filter((r) => r.species).map((r) => r.id));
+
 // Reverse lookup: which points also block this one (couch1 blocks couch2 => couch2 blocked by couch1).
 const blockedBy = new Map<string, string[]>();
 for (const p of points) for (const b of p.blocks ?? []) blockedBy.set(b, [...(blockedBy.get(b) ?? []), p.id]);
@@ -134,7 +136,8 @@ export class World {
   // ---- Two clones passing in the hall: stop, high-five, carry on ----------------
 
   private greetings(): void {
-    const walking = this.clones.filter((c) => c.state === 'walking' && !c.moment);
+    // Only Justins high-five; Pokémon keep to themselves.
+    const walking = this.clones.filter((c) => c.state === 'walking' && !c.moment && !POKEMON.has(c.id));
     for (let i = 0; i < walking.length; i++) {
       for (let j = i + 1; j < walking.length; j++) {
         const a = walking[i];

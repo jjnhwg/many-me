@@ -4,7 +4,7 @@ import { Application, Container, Graphics, Text } from 'pixi.js';
 import { depth, iso, screenToGrid, tileCenter } from '../../engine/iso';
 import { FixedStep } from '../../engine/loop';
 import { activityById } from '../activities.config';
-import { outfits, roster } from '../clones.config';
+import { labelOf, outfits, roster } from '../clones.config';
 import { pointById, props, WALL_TALL, WORLD_H, WORLD_W, zoneAt, type Prop } from '../zones.config';
 import { fastForward } from '../../sim/offline';
 import { hourOf } from '../../sim/schedule';
@@ -12,6 +12,7 @@ import { SIM_STEP_S, World } from '../../sim/world';
 import type { Clone } from '../../sim/types';
 import { loadSave, saveWorld, useWorldStore, type GameApi, type Snapshot } from '../../store/worldStore';
 import { figureRects, OUTLINE, pose, type PoseName } from './character';
+import { placePokemon, pokemonRects } from './pokemon';
 import { floorEllipse, rects } from './draw';
 import { lightAt } from './lighting';
 import { PROP_DEFS, type DrawCtx, type PropDef } from './props';
@@ -239,11 +240,28 @@ export class Game implements GameApi {
     const g = v.g;
     const cfg = roster.find((r) => r.id === c.id)!;
     const name = this.poseName(c);
+    const anchor = this.cloneAnchor(c);
+    g.clear();
+
+    if (cfg.species) {
+      // Pokémon: one sprite per species, no back view or lying rotation (Gliscor hangs instead).
+      const pp = pokemonRects(cfg.species, name, now + c.id.length * 137);
+      if (name !== 'sleep') {
+        g.ellipse(0, 0, 9, 3.5).fill({ color: '#000000', alpha: 0.22 });
+        if (c.id === selectedId || c.id === hoverId) g.ellipse(0, 0, 12, 5).stroke({ color: cfg.color, width: 1, alpha: c.id === selectedId ? 1 : 0.6 });
+      }
+      rects(g, 0, 0, placePokemon(pp), OUTLINE);
+      g.pivot.set(0, 0);
+      g.rotation = 0;
+      g.scale.x = c.dir === 'SW' || c.dir === 'NW' ? -1 : 1;
+      g.position.set(Math.round(anchor.x), Math.round(anchor.y));
+      const a = this.step.alpha;
+      g.zIndex = depth(c.prev.x + (c.pos.x - c.prev.x) * a, c.prev.y + (c.pos.y - c.prev.y) * a, 60);
+      return;
+    }
+
     const back = c.dir === 'NE' || c.dir === 'NW';
     const p = pose(name, now + c.id.length * 137, back && name !== 'sleep');
-    const anchor = this.cloneAnchor(c);
-
-    g.clear();
     if (!p.lying) {
       g.ellipse(0, 0, 7, 3).fill({ color: '#000000', alpha: 0.22 });
       if (c.id === selectedId || c.id === hoverId) g.ellipse(0, 0, 10, 5).stroke({ color: cfg.color, width: 1, alpha: c.id === selectedId ? 1 : 0.6 });
@@ -527,7 +545,7 @@ export class Game implements GameApi {
         if (c.moment?.kind === 'build') activity = 'fixing a broken build';
         const zone = zoneAt(Math.round(c.pos.x), Math.round(c.pos.y))?.name ?? '';
         return {
-          id: c.id, label: `${cfg.name} · ${cfg.role}`, role: cfg.role, color: cfg.color,
+          id: c.id, label: labelOf(cfg), role: cfg.role ?? cfg.name, color: cfg.color,
           activity, emoji: act?.emoji ?? '💭', state: c.state, zone, needs: { ...c.needs },
         };
       }),

@@ -70,6 +70,22 @@ export function drawFloor(): Graphics {
   quad(g, rectQuad(12.45, 14.45, 15.95, 17.55), '#7ad1c9');
   quad(g, rectQuad(0.5, 9.7, 29.5, 11.3), '#b9b09d');
   quad(g, rectQuad(0.65, 9.85, 29.35, 11.15), '#c9a46c');
+  // Pokémon room: a big Poké Ball on the floor and a pond around Greninja's rock.
+  const disc = (cx: number, cy: number, r: number, a0: number, a1: number) =>
+    Array.from({ length: 13 }, (_, i) => {
+      const a = a0 + ((a1 - a0) * i) / 12;
+      return iso(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 0);
+    }) as [number, number][];
+  quad(g, disc(35, 12, 2.6, 0, Math.PI * 2), '#2a2a2e');
+  quad(g, disc(35, 12, 2.4, Math.PI * 0.75, Math.PI * 1.75), '#e84a4a');
+  quad(g, disc(35, 12, 2.4, -Math.PI * 0.25, Math.PI * 0.75), '#f4f1ea');
+  // Black band across the middle, along the line between the two halves.
+  const [dx, dy, px, py] = [Math.SQRT1_2 * 2.4, -Math.SQRT1_2 * 2.4, Math.SQRT1_2 * 0.18, Math.SQRT1_2 * 0.18];
+  quad(g, [iso(35 - dx - px, 12 - dy - py), iso(35 + dx - px, 12 + dy - py), iso(35 + dx + px, 12 + dy + py), iso(35 - dx + px, 12 - dy + py)], '#2a2a2e');
+  quad(g, disc(35, 12, 0.7, 0, Math.PI * 2), '#2a2a2e');
+  quad(g, disc(35, 12, 0.45, 0, Math.PI * 2), '#f4f1ea');
+  quad(g, disc(38.4, 9.5, 1.5, 0, Math.PI * 2), '#3d7fb8');
+  quad(g, disc(38.4, 9.5, 1.25, 0, Math.PI * 2), '#5fa8d8');
   // Kitchen floor sheen.
   quad(g, rectQuad(18, 13, 24, 18.5), '#ffffff', 0.25);
   return g;

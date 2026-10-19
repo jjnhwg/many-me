@@ -23,7 +23,7 @@ export type Figure = {
 };
 
 export type PoseName =
-  | 'idle' | 'walk' | 'run' | 'type' | 'squat' | 'press' | 'drill' | 'roll' | 'tapRoll' | 'stretch' | 'swing' | 'putt'
+  | 'idle' | 'walk' | 'run' | 'type' | 'squat' | 'press' | 'drill' | 'roll' | 'tapRoll' | 'stretch' | 'swing' | 'putt' | 'command'
   | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'rest' | 'facepalm' | 'fistpump'
   | 'wave';
 
@@ -81,6 +81,12 @@ export function pose(name: PoseName, t: number, back: boolean): PoseResult {
       else if (k === 2) fig = { ...base, la: 'shoulder', ra: 'chest', held: ['clubBack', 'ball'], eyes: 'down' };
       else if (k === 3) fig = { ...base, la: 'chest', ra: 'chest', held: ['clubDown'], leanX: 1 };
       else { fig = { ...base, la: 'chest', ra: 'shoulder', held: ['clubThrough'] }; rotation = 0.06; }
+      break;
+    }
+    case 'command': {
+      // Pointing out a move, then a fist pump when it lands.
+      const k = f(700, 3);
+      fig = k < 2 ? { ...base, ra: 'out', la: 'chest' } : { ...base, ra: f(220, 2) ? 'up' : 'shoulder', la: 'down' };
       break;
     }
     case 'putt': {

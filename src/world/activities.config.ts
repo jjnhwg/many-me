@@ -1,12 +1,12 @@
 // What clones can do. Adding an activity is a data change here (+ an anim name the renderer knows).
 
-export type Category = 'bjj' | 'gym' | 'dev' | 'golf' | 'coffee' | 'eat' | 'rest' | 'selfcare' | 'sleep' | 'wander';
+export type Category = 'bjj' | 'gym' | 'dev' | 'golf' | 'pokemon' | 'coffee' | 'eat' | 'rest' | 'selfcare' | 'sleep' | 'wander';
 
 export type Needs = { energy: number; focus: number; hunger: number; mood: number };
 
 export type Anim =
   | 'idle' | 'walk' | 'type' | 'squat' | 'press' | 'run' | 'drill' | 'roll' | 'stretch'
-  | 'swing' | 'putt' | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'rest';
+  | 'swing' | 'putt' | 'command' | 'flame' | 'shuriken' | 'meditate' | 'glide' | 'aura' | 'soar' | 'sleep' | 'eat' | 'eatStand' | 'shake' | 'drink' | 'phone' | 'skincare' | 'rest';
 
 export type Activity = {
   id: string;
@@ -19,7 +19,7 @@ export type Activity = {
   focusTask?: boolean;        // duration scales with focus
   summary: { kind: 'time' | 'count'; text: string }; // "{t}" = duration, "{n}" = count
   emoji: string;
-  only?: string[];            // clone ids allowed to pick it (default: everyone)
+  only?: string[];            // clone ids allowed to pick it (default: every Justin; Pokémon only do what lists them)
 };
 
 const HALL = ['hall1', 'hall2', 'hall3', 'hall4', 'hall5', 'hall6'];
@@ -67,6 +67,37 @@ export const activities: Activity[] = [
     effects: { mood: 40 }, summary: { kind: 'count', text: 'did skincare {n}x' }, emoji: '🧴' },
   { id: 'sleep', label: 'sleeping', category: 'sleep', points: ['bed1', 'bed2', 'couch1', 'golf_beanbag', 'dojo_mat'], anim: 'sleep', duration: [0, 0],
     effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤' },
+  // Pokémon room
+  { id: 'train', label: 'training Pokémon', category: 'pokemon', points: ['poke_trainer1', 'poke_trainer2'], anim: 'command', duration: [3, 7],
+    effects: { energy: -6, mood: 20 }, summary: { kind: 'count', text: 'ran {n} Pokémon training sessions' }, emoji: '⚡' },
+  { id: 'flamethrower', label: 'using Flamethrower', category: 'pokemon', points: ['poke_firing'], anim: 'flame', duration: [2, 5],
+    effects: { energy: -25, hunger: 10, mood: 10 }, summary: { kind: 'count', text: 'used Flamethrower {n}x' }, emoji: '🔥', only: ['arcanine'] },
+  { id: 'watershuriken', label: 'throwing Water Shuriken', category: 'pokemon', points: ['poke_shuriken'], anim: 'shuriken', duration: [2, 5],
+    effects: { energy: -22, hunger: 8, mood: 10 }, summary: { kind: 'count', text: 'threw Water Shuriken {n}x' }, emoji: '💧', only: ['greninja'] },
+  { id: 'meditate', label: 'meditating on the rock', category: 'rest', points: ['poke_rock'], anim: 'meditate', duration: [5, 12],
+    effects: { energy: 30, focus: 30, mood: 10 }, summary: { kind: 'time', text: 'meditated for {t}' }, emoji: '🪷', only: ['greninja'] },
+  { id: 'glide', label: 'gliding around', category: 'pokemon', points: ['poke_glide1', 'poke_glide2'], anim: 'glide', duration: [2, 6],
+    effects: { energy: -15, mood: 15 }, summary: { kind: 'time', text: 'glided for {t}' }, emoji: '🦇', only: ['gliscor'] },
+  { id: 'aurasphere', label: 'firing Aura Sphere', category: 'pokemon', points: ['poke_firing', 'poke_shuriken'], anim: 'aura', duration: [2, 5],
+    effects: { energy: -22, hunger: 8, mood: 10 }, summary: { kind: 'count', text: 'fired Aura Sphere {n}x' }, emoji: '🔵', only: ['lucario'] },
+  { id: 'soar', label: 'soaring around', category: 'pokemon', points: ['poke_sky1', 'poke_sky2'], anim: 'soar', duration: [2, 6],
+    effects: { energy: -15, mood: 15 }, summary: { kind: 'time', text: 'soared for {t}' }, emoji: '✈️', only: ['latios'] },
+  { id: 'sleep_lucario', label: 'sleeping on the mat', category: 'sleep', points: ['poke_mat'], anim: 'sleep', duration: [0, 0],
+    effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤', only: ['lucario'] },
+  { id: 'sleep_latios', label: 'dozing in midair', category: 'sleep', points: ['poke_hover'], anim: 'sleep', duration: [0, 0],
+    effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤', only: ['latios'] },
+  { id: 'berries', label: 'munching berries', category: 'eat', points: ['poke_bowl1', 'poke_bowl2'], anim: 'eat', duration: [2, 4],
+    effects: { hunger: -900, mood: 15 }, summary: { kind: 'count', text: 'ate {n} bowls of berries' }, emoji: '🍒', only: ['arcanine', 'greninja', 'gliscor', 'lucario', 'latios'] },
+  { id: 'dognap', label: 'napping in the dog bed', category: 'rest', points: ['poke_bed'], anim: 'sleep', duration: [8, 20],
+    effects: { energy: 70 }, summary: { kind: 'count', text: 'napped {n}x' }, emoji: '😴', only: ['arcanine'] },
+  { id: 'sleep_arcanine', label: 'sleeping', category: 'sleep', points: ['poke_bed'], anim: 'sleep', duration: [0, 0],
+    effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤', only: ['arcanine'] },
+  { id: 'sleep_greninja', label: 'sleeping on the rock', category: 'sleep', points: ['poke_rock'], anim: 'sleep', duration: [0, 0],
+    effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤', only: ['greninja'] },
+  { id: 'sleep_gliscor', label: 'sleeping upside down', category: 'sleep', points: ['poke_perch'], anim: 'sleep', duration: [0, 0],
+    effects: { energy: 14, focus: 12 }, summary: { kind: 'time', text: 'slept {t}' }, emoji: '💤', only: ['gliscor'] },
+  { id: 'pokewander', label: 'roaming the room', category: 'wander', points: ['poke_w1', 'poke_w2', 'poke_w3', 'poke_w4'], anim: 'idle', duration: [0.3, 1.2],
+    effects: { energy: 2 }, summary: { kind: 'count', text: 'roamed the room {n}x' }, emoji: '🐾', only: ['arcanine', 'greninja', 'gliscor', 'lucario', 'latios'] },
   { id: 'wander', label: 'hanging out', category: 'wander', points: HALL, anim: 'idle', duration: [0.3, 1.2],
     effects: { energy: 2 }, summary: { kind: 'count', text: 'wandered the halls {n}x' }, emoji: '🚶' },
 ];
@@ -91,6 +122,13 @@ export const lines: Record<string, string[]> = {
   shake: ['3000 calories...', 'why is it so thick', 'halfway?? no.', "can't feel my stomach", 'eat big get big', '🤢'],
   phone: ['lol', 'one more video', 'where did the hour go'],
   skincare: ['glow up', 'SPF is life', 'moisturize'],
+  train: ['use Flamethrower!', 'Water Shuriken, go!', 'Aura Sphere!', 'nice dodge!', 'super effective!', 'good job buddy'],
+  flamethrower: ['🔥🔥🔥', 'ARRROOO!'],
+  watershuriken: ['Gekko!', '💧✦'],
+  glide: ['Gli-gli!', 'wheee'],
+  berries: ['nom', '🍒', '*crunch*'],
+  aurasphere: ['Haaa!', '🔵'],
+  soar: ['Hyuuun!', '✈️'],
   walk: ['brb', 'hmm', 'where was I'],
   idle: ['what now', 'vibes', '...'],
 };

@@ -1,7 +1,7 @@
 // The floor plan as data. Coordinates are tiles on a W x H grid.
 // x grows toward screen down-right, y toward screen down-left.
 
-export const WORLD_W = 30;
+export const WORLD_W = 40;
 export const WORLD_H = 21;
 
 export type Dir = 'SE' | 'SW' | 'NE' | 'NW';
@@ -47,6 +47,11 @@ export const zones: Zone[] = [
     floor: { a: '#f1e3e0', b: '#e6d4d1', pattern: 'checker' },
     wallpaper: { base: '#bfe6e1', stripe: '#a9dcd5', trim: '#f29bb8', pattern: 'stripes' },
   },
+  {
+    id: 'pokemon', name: 'Pokémon Room', rect: { x: 30, y: 0, w: 10, h: 21 }, accent: '#ffcb05',
+    floor: { a: '#cfe9f5', b: '#bfe0ef', pattern: 'tile' },
+    wallpaper: { base: '#fdf3d0', stripe: '#e84a4a', trim: '#2a2a2e', pattern: 'dots' },
+  },
 ];
 
 export function zoneAt(x: number, y: number): Zone | undefined {
@@ -70,7 +75,8 @@ export const walls: WallRun[] = [
   { axis: 'x', at: 10, from: 0, to: 9 },
   { axis: 'x', at: 20, from: 0, to: 9 },
   { axis: 'x', at: 10, from: 12, to: WORLD_H, doors: [18, 19] },
-  { axis: 'y', at: 12, from: 0, to: WORLD_W, doors: [4, 5, 13, 14, 21, 22, 23, 24] },
+  { axis: 'y', at: 12, from: 0, to: 30, doors: [4, 5, 13, 14, 21, 22, 23, 24] },
+  { axis: 'x', at: 30, from: 0, to: WORLD_H, doors: [9, 10, 11, 16, 17] },
 ];
 
 // ---- Interaction points ---------------------------------------------------------
@@ -121,6 +127,26 @@ export const points: Point[] = [
   { id: 'hall4', tile: [19, 9], dir: 'SW' },
   { id: 'hall5', tile: [24, 11], dir: 'SE' },
   { id: 'hall6', tile: [28, 10], dir: 'SW' },
+  // Pokémon room. `lie.z` is also used for Gliscor's perch height, where it hangs upside down.
+  { id: 'poke_perch', tile: [38, 3], dir: 'SW', lie: { z: 34 } },
+  { id: 'poke_glide1', tile: [36, 5], dir: 'SW' },
+  { id: 'poke_glide2', tile: [33, 4], dir: 'SE' },
+  { id: 'poke_firing', tile: [32, 13], dir: 'SE' },
+  { id: 'poke_shuriken', tile: [32, 16], dir: 'SE' },
+  { id: 'poke_rock', tile: [38, 9], dir: 'SW', lie: { z: 6 } },
+  { id: 'poke_bed', tile: [37, 19], dir: 'SW', lie: { z: 3 } },
+  { id: 'poke_bowl1', tile: [33, 9], dir: 'SE' },
+  { id: 'poke_bowl2', tile: [34, 8], dir: 'SW' },
+  { id: 'poke_trainer1', tile: [31, 6], dir: 'SE' },
+  { id: 'poke_trainer2', tile: [31, 19], dir: 'SE' },
+  { id: 'poke_w1', tile: [35, 2], dir: 'SE' },
+  { id: 'poke_w2', tile: [36, 11], dir: 'SW' },
+  { id: 'poke_w3', tile: [35, 18], dir: 'SE' },
+  { id: 'poke_w4', tile: [33, 20], dir: 'SE' },
+  { id: 'poke_mat', tile: [33, 18], dir: 'SE', lie: { z: 1 } },
+  { id: 'poke_sky1', tile: [37, 6], dir: 'SW' },
+  { id: 'poke_sky2', tile: [34, 15], dir: 'SE' },
+  { id: 'poke_hover', tile: [38, 15], dir: 'SW' },
 ];
 
 export const pointById = new Map(points.map((p) => [p.id, p]));
@@ -202,4 +228,16 @@ export const props: Prop[] = [
   { kind: 'nightstand', tile: [25, 13], solid: true },
   { kind: 'vanity', tile: [28, 13], solid: true, point: 'vanity' },
   { kind: 'plant', tile: [29, 19], solid: true },
+  // Pokémon room
+  { kind: 'healer', tile: [31, 1], size: [2, 1], solid: true },
+  { kind: 'pokeposter', wall: { axis: 'y', at: 0, from: 34, to: 35.6, z0: 18, z1: 34 } },
+  { kind: 'window', wall: { axis: 'y', at: 0, from: 36.6, to: 38.4, z0: 16, z1: 38 } },
+  { kind: 'perch', tile: [38, 3], solid: true, point: 'poke_perch' },
+  { kind: 'target', tile: [36, 13], solid: true, point: 'poke_firing' },
+  { kind: 'target', tile: [36, 16], solid: true, point: 'poke_shuriken' },
+  { kind: 'pondrock', tile: [38, 9], point: 'poke_rock' },
+  { kind: 'dogbed', tile: [37, 19], point: 'poke_bed' },
+  { kind: 'berrybowl', tile: [34, 9], solid: true },
+  { kind: 'sleepmat', tile: [33, 18], point: 'poke_mat' },
+  { kind: 'plant', tile: [39, 0], solid: true },
 ];

@@ -1,22 +1,24 @@
 import { useEffect, useRef } from 'react';
-import { outfits } from '../world/clones.config';
+import { outfits, roster } from '../world/clones.config';
 import { figureRects, OUTLINE, pose } from '../world/render/character';
+import { placePokemon, pokemonRects } from '../world/render/pokemon';
 
 /** The clone's sprite drawn big on a plain canvas (same rects as the world renderer). */
-export function Portrait({ outfit, bg }: { outfit: string; bg: string }) {
+export function Portrait({ cloneId, outfit, bg }: { cloneId: string; outfit: string; bg: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const cv = ref.current;
     if (!cv) return;
     const ctx = cv.getContext('2d')!;
+    const species = roster.find((r) => r.id === cloneId)?.species;
     const S = 2;
-    const W = 32;
+    const W = species ? 40 : 32;
     const H = 38;
     cv.width = W * S;
     cv.height = H * S;
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, cv.width, cv.height);
-    const list = figureRects(outfits[outfit], pose('idle', 0, false).fig);
+    const list = species ? placePokemon({ ...pokemonRects(species, 'idle', 0), lift: 0 }) : figureRects(outfits[outfit], pose('idle', 0, false).fig);
     const ox = W / 2;
     const oy = H - 4;
     ctx.fillStyle = OUTLINE;
@@ -25,6 +27,6 @@ export function Portrait({ outfit, bg }: { outfit: string; bg: string }) {
       ctx.fillStyle = c;
       ctx.fillRect((ox + x) * S, (oy + y) * S, w * S, h * S);
     }
-  }, [outfit, bg]);
+  }, [cloneId, outfit, bg]);
   return <canvas ref={ref} className="portrait" />;
 }
