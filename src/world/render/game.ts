@@ -4,7 +4,7 @@ import { Application, Container, Graphics, Text } from 'pixi.js';
 import { depth, iso, screenToGrid, tileCenter } from '../../engine/iso';
 import { FixedStep } from '../../engine/loop';
 import { activityById } from '../activities.config';
-import { labelOf, lookOf, outfits, roster } from '../clones.config';
+import { outfits, roster } from '../clones.config';
 import { pointById, props, WALL_TALL, WORLD_H, WORLD_W, zoneAt, type Prop } from '../zones.config';
 import { fastForward } from '../../sim/offline';
 import { hourOf } from '../../sim/schedule';
@@ -248,7 +248,7 @@ export class Game implements GameApi {
       g.ellipse(0, 0, 7, 3).fill({ color: '#000000', alpha: 0.22 });
       if (c.id === selectedId || c.id === hoverId) g.ellipse(0, 0, 10, 5).stroke({ color: cfg.color, width: 1, alpha: c.id === selectedId ? 1 : 0.6 });
     }
-    rects(g, 0, 0, figureRects(outfits[c.outfit], p.fig, lookOf(c.id)), OUTLINE);
+    rects(g, 0, 0, figureRects(outfits[c.outfit], p.fig), OUTLINE);
 
     g.pivot.set(0, p.lying ? -14 : 0);
     g.rotation = p.rotation;
@@ -527,7 +527,7 @@ export class Game implements GameApi {
         if (c.moment?.kind === 'build') activity = 'fixing a broken build';
         const zone = zoneAt(Math.round(c.pos.x), Math.round(c.pos.y))?.name ?? '';
         return {
-          id: c.id, label: labelOf(cfg), role: cfg.role ?? cfg.name, color: cfg.color,
+          id: c.id, label: `${cfg.name} · ${cfg.role}`, role: cfg.role, color: cfg.color,
           activity, emoji: act?.emoji ?? '💭', state: c.state, zone, needs: { ...c.needs },
         };
       }),

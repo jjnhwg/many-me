@@ -1,7 +1,7 @@
 // "They keep living while you're away": headless fast-forward + a summary of what changed.
 import { hashSeed, Rng } from '../engine/rng';
 import { activityById } from '../world/activities.config';
-import { labelOf, roster } from '../world/clones.config';
+import { roster } from '../world/clones.config';
 import type { World } from './world';
 
 export const MAX_CATCHUP_MS = 24 * 3600_000;
@@ -63,7 +63,7 @@ export function fastForward(w: World, ms: number): AwaySummary {
           ? a.summary.text.replace('{t}', formatDuration(r.ms))
           : a.summary.text.replace('{n}', String(Math.max(1, r.n))).replace(/\b1x\b/, 'once');
       });
-      return { id: c.id, label: labelOf(cfg), color: cfg.color, items };
+      return { id: c.id, label: `${cfg.name} · ${cfg.role}`, color: cfg.color, items };
     }),
   };
 }

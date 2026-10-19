@@ -93,7 +93,6 @@ export const points: Point[] = [
   { id: 'dojo_stretch1', tile: [7, 3], dir: 'SW' },
   { id: 'dojo_stretch2', tile: [7, 6], dir: 'SW' },
   { id: 'dojo_mat', tile: [1, 7], dir: 'SE', lie: { z: 2 } },
-  { id: 'dojo_mat2', tile: [3, 7], dir: 'SE', lie: { z: 2 } },
   // Gym
   { id: 'gym_squat', tile: [13, 3], dir: 'SE' },
   { id: 'gym_bench', tile: [16, 3], dir: 'SE' },
